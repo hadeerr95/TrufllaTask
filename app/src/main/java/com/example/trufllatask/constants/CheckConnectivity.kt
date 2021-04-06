@@ -3,22 +3,29 @@ package com.example.trufllatask.constants
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-
-class CheckConnectivity(val con){
-
+import java.net.InetAddress
 
 
-
+class CheckConnectivity{
 
     companion object{
-        private  var context: Context? = null
+         fun isNetworkConnected(context: Context): Boolean {
+            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+           return when (connectivityManager!!.activeNetworkInfo != null && connectivityManager.activeNetworkInfo!!.isConnected){
+               true -> isInternetAvailable()
+               false -> false
+            }
 
-        public fun isNetworkAvailable(): Boolean {
-            val connectivityManager = this.context?.getSystemService(Context.CONNECTIVITY_SERVICE)
-            return if (connectivityManager is ConnectivityManager) {
-                val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
-                networkInfo?.isConnected ?: false
-            } else false
+        }
+
+        private fun isInternetAvailable(): Boolean {
+
+            return try {
+                val address: InetAddress = InetAddress.getByName("google.com")
+                !address.equals("")
+            } catch (e: Exception) {
+                false
+            }
         }
     }
 

@@ -12,6 +12,6 @@ interface ApiService {
     @GET(Constants.repos_api_word)
     fun getReposList(
         @Query("page") page: Int,
-        @Query("per_page") perPage: Int = 15
+        @Query("per_page") perPage: Int
     ): Call<MyResponse>
 }
