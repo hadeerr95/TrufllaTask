@@ -1,6 +1,7 @@
 package com.example.trufllatask.repository
 
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import retrofit2.Callback
 import androidx.lifecycle.ViewModel
@@ -51,6 +52,7 @@ class ReposRepository  (context: Context): ViewModel() {
                 }
             }
             override fun onFailure(call: Call<MyResponse>, t: Throwable) {
+                Toast.makeText(myContext , t.message , Toast.LENGTH_LONG).show()
             }
 
         })
