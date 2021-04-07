@@ -49,6 +49,8 @@ class ReposRepository  (context: Context): ViewModel() {
                 if(response.isSuccessful){
                     ReposApp.db!!.reposItemDao().deleteAllImageItems()
                     ReposApp.db!!.reposItemDao().insertImageItems(response.body()?.repos!!)
+                }else {
+                    Toast.makeText(myContext ,"Response is failed please try again" , Toast.LENGTH_LONG).show()
                 }
             }
             override fun onFailure(call: Call<MyResponse>, t: Throwable) {
