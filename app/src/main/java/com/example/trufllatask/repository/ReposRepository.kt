@@ -1,24 +1,28 @@
 package com.example.trufllatask.repository
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import retrofit2.Callback
 import androidx.lifecycle.ViewModel
-import com.example.trufllatask.`interface`.ResultInterface
+import com.example.trufllatask.ReposApp
 import com.example.trufllatask.constants.CheckConnectivity
+import com.example.trufllatask.data.remote.ApiClient
 import com.example.trufllatask.data.remote.ApiService
 import com.example.trufllatask.model.MyResponse
+import com.example.trufllatask.model.ReposItem
 import retrofit2.Call
 import retrofit2.Response
+import timber.log.Timber
 
-class ReposRepository  (context: Context , apiService: ApiService , resultInterface: ResultInterface): ViewModel() {
+class ReposRepository  (context: Context): ViewModel() {
 
 
     private var  myContext : Context = context
-    private var apiService :ApiService = apiService
-    private var resultInterface = resultInterface
+    private var apiService :ApiService = ApiClient.getClient()
 
-    fun  prepareReposList(page : Int , apiReturnNumber : Int){
-        if(checkConnectivity()){
+    fun  prepareReposList(page : Int , apiReturnNumber : Int): LiveData<List<ReposItem>> {
+        return if(checkConnectivity() || getReposListFromLocale().value?.size!! > 0){
+            Timber.e("prepareReposList")
             //get repos list from api
             getReposListFromApi(page , apiReturnNumber)
 
@@ -30,25 +34,27 @@ class ReposRepository  (context: Context , apiService: ApiService , resultInterf
         }
     }
 
-    private fun getReposListFromLocale() {
+    private fun getReposListFromLocale(): LiveData<List<ReposItem>> {
+        return ReposApp.db!!.reposItemDao().getImageItemList()
 
     }
 
-    private fun getReposListFromApi(page : Int , apiReturnNumber : Int) {
-
+    private fun getReposListFromApi(page : Int , apiReturnNumber : Int): LiveData<List<ReposItem>> {
+        Timber.e("getReposListFromApi")
         apiService.getReposList(page , apiReturnNumber).enqueue(object : Callback<MyResponse>{
-            override fun onResponse(call: Call<MyResponse>, response: Response<MyResponse>) {
-                if(response.isSuccessful)
-                    resultInterface.onSuccess(response.body()?.repos)
-                else
-                    resultInterface.onFailed(response.message())
+            override fun onResponse(call: Call<MyResponse>, response: Response<MyResponse>)
+            {
+                Timber.e("onResponse $response")
+                if(response.isSuccessful){
+                    ReposApp.db!!.reposItemDao().deleteAllImageItems()
+                    ReposApp.db!!.reposItemDao().insertImageItems(response.body()?.repos!!)
+                }
             }
-
             override fun onFailure(call: Call<MyResponse>, t: Throwable) {
-                 resultInterface.onFailed(t.message)
             }
 
         })
+        return ReposApp.db!!.reposItemDao().getImageItemList()
 
     }
 

@@ -1,5 +1,10 @@
 package com.example.trufllatask.model
 
+import androidx.room.Entity
+import com.example.trufllatask.constants.Constants.Companion.owner_table
+import java.io.Serializable
+
+@Entity(tableName = owner_table)
 data class Owner(
     var avatar_url: String,
     var events_url: String,
@@ -19,4 +24,4 @@ data class Owner(
     var subscriptions_url: String,
     var type: String,
     var url: String
-)
+) : Serializable

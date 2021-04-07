@@ -1,20 +1,16 @@
 package com.example.trufllatask.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.example.trufllatask.`interface`.ResultInterface
+import androidx.lifecycle.*
 import com.example.trufllatask.model.ReposItem
 import com.example.trufllatask.repository.ReposRepository
 
-class ReposViewModel(val reposRepository: ReposRepository) : ViewModel()  , ResultInterface{
+class ReposViewModel(private val reposRepository: ReposRepository) : ViewModel() {
 
     private val _pageNumber = MutableLiveData<Int>()
-    val pageNumber: LiveData<Int>
+    private val pageNumber: LiveData<Int>
         get() = _pageNumber
 
-    private val _repos = MediatorLiveData<List<ReposItem>>()
+    private var _repos = MediatorLiveData<List<ReposItem>>()
     val repos: LiveData<List<ReposItem>>
         get() = _repos
 
@@ -24,20 +20,14 @@ class ReposViewModel(val reposRepository: ReposRepository) : ViewModel()  , Resu
 
     //for first page
     fun getListFirstPage() {
-        pageNumber.value?.let { reposRepository.prepareReposList(it, 15) }
+        pageNumber.value?.let {
+            _repos.value =    reposRepository.prepareReposList(it, 15).value
+        }
     }
 
     //for next page
     fun  getListNextPage(){
-        pageNumber.value?.let { reposRepository.prepareReposList(it.plus(it+1), 15) }
+        pageNumber.value?.let {   _repos.value = reposRepository.prepareReposList(it.plus(it+1), 15).value }
 
-    }
-
-    override fun onSuccess(songModels: List<ReposItem?>?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onFailed(errorMsg: String?) {
-        TODO("Not yet implemented")
     }
 }

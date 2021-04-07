@@ -1,5 +1,10 @@
 package com.example.trufllatask.model
 
+import androidx.room.Entity
+import com.example.trufllatask.constants.Constants.Companion.repo_table
+import java.io.Serializable
+
+@Entity(tableName = repo_table)
 data class ReposItem(
     var archive_url: String,
     var archived: Boolean,
@@ -74,4 +79,4 @@ data class ReposItem(
     var url: String,
     var watchers: Int,
     var watchers_count: Int
-)
+) : Serializable
